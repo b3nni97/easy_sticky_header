@@ -88,6 +88,17 @@ class StickyContainerWidget extends SingleChildRenderObjectWidget {
   /// with usage habits.
   final bool overlapParent;
 
+  /// The [offset] which is added to the top of the sticky header.
+  /// Higher offset means the sticky header starts sticking lower.
+  final double? offset;
+
+  /// The sticky header is calculated based on getOffsetToReveal which sometimes
+  /// doesn´t correctly calculate the offset. After a few frames this number stays
+  /// the same and shouldn´t normally be re-calculated. This is only to improve
+  /// the performance compared to [performancePriority] which disables the caching
+  /// completely.
+  final bool cacheUntilSettle;
+
   const StickyContainerWidget({
     Key? key,
     required this.index,
@@ -96,6 +107,8 @@ class StickyContainerWidget extends SingleChildRenderObjectWidget {
     this.performancePriority = true,
     this.parentIndex,
     this.overlapParent = false,
+    this.offset,
+    this.cacheUntilSettle = false,
     required Widget child,
   }) : super(key: key, child: child);
 
@@ -109,6 +122,8 @@ class StickyContainerWidget extends SingleChildRenderObjectWidget {
       performancePriority: performancePriority,
       parentIndex: parentIndex,
       overlapParent: overlapParent,
+      offset: offset,
+      cacheUntilSettle: cacheUntilSettle,
       widget: child ?? Container(),
     );
   }
@@ -124,6 +139,7 @@ class StickyContainerWidget extends SingleChildRenderObjectWidget {
       ..performancePriority = performancePriority
       ..parentIndex = parentIndex
       ..overlapParent = overlapParent
+      ..offset = offset
       ..widget = child ?? Container();
   }
 

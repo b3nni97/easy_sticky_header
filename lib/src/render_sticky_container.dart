@@ -10,6 +10,11 @@ import 'package:flutter/rendering.dart';
 import 'sticky_header_controller.dart';
 import 'sticky_header_info.dart';
 
+// The number which the getOffsetToReveal re-calculates until
+// the cached value should be settled. This is used if
+// [cacheUntilSettle] is true.
+const kCalculateCacheUntilSettleCount = 5;
+
 /// RenderObject for StickyContainer widget.
 ///
 /// When the page is scrolled, the [StickyHeaderController] will get the header
@@ -24,7 +29,11 @@ class RenderStickyContainer extends RenderProxyBox {
   bool performancePriority;
   int? parentIndex;
   bool overlapParent;
+  double? offset;
+  bool cacheUntilSettle;
   Widget widget;
+
+  int _cacheCalculatedCount = 0;
 
   RenderStickyContainer({
     required StickyHeaderController? controller,
@@ -34,6 +43,8 @@ class RenderStickyContainer extends RenderProxyBox {
     required this.performancePriority,
     this.parentIndex,
     required this.overlapParent,
+    this.offset,
+    required this.cacheUntilSettle,
     required this.widget,
   }) : _controller = controller;
 
@@ -70,10 +81,23 @@ class RenderStickyContainer extends RenderProxyBox {
     if (pixels != null) {
       return pixels ?? 0.0;
     } else {
-      if (_pixelsCache == null || !performancePriority) {
+      if (_pixelsCache == null ||
+          !performancePriority ||
+          (cacheUntilSettle &&
+              _cacheCalculatedCount <= kCalculateCacheUntilSettleCount)) {
+        _cacheCalculatedCount++;
         _pixelsCache = RenderAbstractViewport.of(this)
-            ?.getOffsetToReveal(this, 0.0)
-            .offset;
+                .getOffsetToReveal(
+                  this,
+                  0.0,
+                  rect: Rect.fromCenter(
+                    center: Offset.zero,
+                    width: 1,
+                    height: 1,
+                  ),
+                )
+                .offset -
+            (offset ?? 0);
       }
       return _pixelsCache ?? 0.0;
     }
