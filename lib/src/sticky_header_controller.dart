@@ -291,7 +291,10 @@ class StickyHeaderController extends ChangeNotifier {
       _stickyHeaderInfoMap[index];
 
   /// Clears the cache, please call when needed.
-  void clearStickyHeaderInfo() => _stickyHeaderInfoMap.clear();
+  void clearStickyHeaderInfo() {
+    currentStickyHeaderInfo = null;
+    _stickyHeaderInfoMap.clear();
+  }
 
   /// Jumps to the header widget of the specified index. Compared with [jumpTo],
   /// a transition animation is added and it supports jumping to the header
