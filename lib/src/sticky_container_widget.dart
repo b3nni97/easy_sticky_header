@@ -140,6 +140,7 @@ class StickyContainerWidget extends SingleChildRenderObjectWidget {
       ..parentIndex = parentIndex
       ..overlapParent = overlapParent
       ..offset = offset
+      ..cacheUntilSettle = cacheUntilSettle
       ..widget = child ?? Container();
   }
 
@@ -202,6 +203,10 @@ class StickyContainerBuilder extends StatefulWidget {
 
   final bool overlapParent;
 
+  final double? offset;
+
+  final bool cacheUntilSettle;
+
   final HeaderWidgetBuilder builder;
 
   const StickyContainerBuilder({
@@ -212,6 +217,8 @@ class StickyContainerBuilder extends StatefulWidget {
     this.performancePriority = true,
     this.parentIndex,
     this.overlapParent = false,
+    this.offset,
+    this.cacheUntilSettle = false,
     required this.builder,
   }) : super(key: key);
 
@@ -247,6 +254,8 @@ class _StickyContainerBuilderState extends State<StickyContainerBuilder>
       performancePriority: widget.performancePriority,
       parentIndex: widget.parentIndex,
       overlapParent: widget.overlapParent,
+      offset: widget.offset,
+      cacheUntilSettle: widget.cacheUntilSettle,
       child: widget.builder(context, _stickyAmount),
     );
   }
